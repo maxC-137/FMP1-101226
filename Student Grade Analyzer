@@ -1,0 +1,153 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
+package com.mycompany.studentgradeanalyzer;
+
+import java.util.Scanner;
+ 
+import java.util.Scanner;
+
+
+class InvalidGradeException extends Exception {
+    public InvalidGradeException(String message) {
+        super(message);
+    }
+}
+ 
+class Student {
+    private String name;
+    private double grade;
+ 
+    public Student(String name, double grade) {
+        this.name = name;
+        this.grade = grade;
+    }
+ 
+    public String getName() {
+        return name;
+    }
+ 
+    public double getGrade() {
+        return grade;
+    }
+}
+ 
+public class StudentGradeAnalyzer {
+    private static final int MAX_STUDENTS = 5;
+    private static Student[] students = new Student[MAX_STUDENTS];
+    private static int studentCount = 0;
+    private static Scanner scanner = new Scanner(System.in);
+ 
+    public static void validateGrade(double grade) throws InvalidGradeException {
+        if (grade < 0 || grade > 100) {
+            throw new InvalidGradeException("Error: Grade must be between 0 and 100.");
+        }
+    }
+ 
+    public static void main(String[] args) {
+        int choice = -1;
+ 
+        do {
+            System.out.println("\n=== STUDENT GRADE VALIDATION SYSTEM ===");
+            System.out.println("1 Add | 2 List | 3 Lookup | 0 Exit");
+            System.out.print("Enter your choice: ");
+ 
+            try {
+                choice = Integer.parseInt(scanner.nextLine().trim());
+ 
+                switch (choice) {
+                    case 1:
+                        addStudent();
+                        break;
+                    case 2:
+                        listStudents();
+                        break;
+                    case 3:
+                        lookupStudent();
+                        break;
+                    case 0:
+                        System.out.println("Exiting program. Thank you.");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please choose 1, 2, 3, or 0.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number for the menu.");
+            }
+ 
+        } while (choice != 0);
+ 
+        scanner.close();
+    }
+ 
+    private static void addStudent() {
+        if (studentCount >= MAX_STUDENTS) {
+            System.out.println("Error: Grade book is full.");
+            return;
+        }
+ 
+        System.out.print("Enter student name: ");
+        String name = scanner.nextLine().trim();
+ 
+        if (name.isEmpty()) {
+            System.out.println("Error: Student name cannot be blank.");
+            return;
+        }
+ 
+        System.out.print("Enter student grade (0-100): ");
+        try {
+            double grade = Double.parseDouble(scanner.nextLine().trim());
+            
+            validateGrade(grade);
+ 
+            students[studentCount] = new Student(name, grade);
+            studentCount++;
+            System.out.println("Added " + name +": " + grade);
+ 
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Enter a valid number.");
+        } catch (InvalidGradeException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+ 
+    private static void listStudents() {
+        if (studentCount == 0) {
+            System.out.println("No student records found.");
+            return;
+        }
+ 
+        System.out.println("\n--- Student Records ---");
+        for (int i = 0; i < studentCount; i++) {
+            System.out.println("Index [" + i + "] | Name: " + students[i].getName() + " | Grade: " + students[i].getGrade());
+        }
+    }
+ 
+    private static void lookupStudent() {
+        if (studentCount == 0) {
+            System.out.println("No student records available to look up.");
+            return;
+        }
+ 
+        System.out.print("Enter zero-based array index (0 to " + (MAX_STUDENTS - 1) + "): ");
+        try {
+            int index = Integer.parseInt(scanner.nextLine().trim());
+ 
+            Student s = students[index];
+            
+            if (s == null) {
+                System.out.println("Error: Index is outside the stored records.");
+            } else {
+                System.out.println("\nStudent Found:");
+                System.out.println("Name: " + s.getName());
+                System.out.println("Grade: " + s.getGrade());
+            }
+ 
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Please enter a valid integer index.");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Error: Index outside the stored records. ");
+        }
+    }
+}
